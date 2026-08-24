@@ -10,7 +10,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-<!-- يجب أن يكون هذا الملف موجودًا في نفس مجلد admin.html -->
 <script src="firebase-config.js"></script>
 
 <style>
@@ -292,9 +291,7 @@ button:disabled{
 
   <div class="form-group">
 
-    <label>
-      البريد الإلكتروني
-    </label>
+    <label>البريد الإلكتروني</label>
 
     <input
       type="email"
@@ -307,9 +304,7 @@ button:disabled{
 
   <div class="form-group">
 
-    <label>
-      كلمة المرور
-    </label>
+    <label>كلمة المرور</label>
 
     <input
       type="password"
@@ -364,20 +359,13 @@ button:disabled{
 
     <form id="productForm">
 
-      <input
-        type="hidden"
-        id="productId"
-      >
-
+      <input type="hidden" id="productId">
 
       <div class="form-grid">
 
-
         <div class="form-group">
 
-          <label>
-            اسم المنتج
-          </label>
+          <label>اسم المنتج</label>
 
           <input
             type="text"
@@ -391,9 +379,7 @@ button:disabled{
 
         <div class="form-group">
 
-          <label>
-            الفئة
-          </label>
+          <label>الفئة</label>
 
           <select
             id="productCategory"
@@ -423,9 +409,7 @@ button:disabled{
 
         <div class="form-group">
 
-          <label>
-            السعر
-          </label>
+          <label>السعر</label>
 
           <input
             type="number"
@@ -441,9 +425,7 @@ button:disabled{
 
         <div class="form-group">
 
-          <label>
-            سعر التخفيض
-          </label>
+          <label>سعر التخفيض</label>
 
           <input
             type="number"
@@ -458,9 +440,7 @@ button:disabled{
 
         <div class="form-group full">
 
-          <label>
-            رابط صورة المنتج
-          </label>
+          <label>رابط صورة المنتج</label>
 
           <input
             type="url"
@@ -474,9 +454,7 @@ button:disabled{
 
         <div class="form-group full">
 
-          <label>
-            الوصف
-          </label>
+          <label>الوصف</label>
 
           <textarea
             id="productDescription"
@@ -488,9 +466,7 @@ button:disabled{
 
         <div class="form-group">
 
-          <label>
-            المقاسات
-          </label>
+          <label>المقاسات</label>
 
           <input
             type="text"
@@ -623,7 +599,6 @@ let firebaseReady =
   typeof db !== "undefined" &&
   typeof auth !== "undefined";
 
-
 let editingId = null;
 
 
@@ -706,6 +681,15 @@ document
     }
 
 
+    const loginButton =
+      document.getElementById("loginBtn");
+
+    loginButton.disabled = true;
+
+    loginButton.textContent =
+      "جاري تسجيل الدخول...";
+
+
     auth
       .signInWithEmailAndPassword(
         email,
@@ -724,11 +708,87 @@ document
 
       .catch(function(error){
 
-        console.error(error);
-
-        showLoginStatus(
-          "فشل تسجيل الدخول. تأكد من البريد وكلمة المرور."
+        console.error(
+          "Firebase Login Error:",
+          error
         );
+
+
+        let message =
+          "حدث خطأ أثناء تسجيل الدخول.";
+
+
+        if(
+          error.code ===
+          "auth/invalid-credential"
+        ){
+
+          message =
+            "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
+
+        }
+
+        else if(
+          error.code ===
+          "auth/user-not-found"
+        ){
+
+          message =
+            "هذا البريد الإلكتروني غير موجود في Firebase.";
+
+        }
+
+        else if(
+          error.code ===
+          "auth/wrong-password"
+        ){
+
+          message =
+            "كلمة المرور غير صحيحة.";
+
+        }
+
+        else if(
+          error.code ===
+          "auth/invalid-email"
+        ){
+
+          message =
+            "صيغة البريد الإلكتروني غير صحيحة.";
+
+        }
+
+        else if(
+          error.code ===
+          "auth/too-many-requests"
+        ){
+
+          message =
+            "تمت محاولات كثيرة. انتظر قليلًا ثم حاول مرة أخرى.";
+
+        }
+
+        else if(
+          error.code ===
+          "auth/network-request-failed"
+        ){
+
+          message =
+            "تحقق من اتصال الهاتف بالإنترنت.";
+
+        }
+
+
+        showLoginStatus(message);
+
+      })
+
+      .finally(function(){
+
+        loginButton.disabled = false;
+
+        loginButton.textContent =
+          "تسجيل الدخول";
 
       });
 
@@ -749,7 +809,9 @@ if(firebaseReady){
 
       loadProducts();
 
-    }else{
+    }
+
+    else{
 
       loginPage.classList.remove("hidden");
 
@@ -890,28 +952,28 @@ document
 
     const productData = {
 
-      name: name,
+      name:name,
 
-      category: category,
+      category:category,
 
-      price: price,
+      price:price,
 
       salePrice:
         isSale
           ? salePrice
           : null,
 
-      isSale: isSale,
+      isSale:isSale,
 
-      image: image,
+      image:image,
 
-      description: description,
+      description:description,
 
-      size: size,
+      size:size,
 
-      isNew: isNew,
+      isNew:isNew,
 
-      isBestseller: isBestseller
+      isBestseller:isBestseller
 
     };
 
@@ -964,8 +1026,8 @@ document
 
         });
 
-
     }
+
 
     /* ================= ADD ================= */
 
@@ -1090,7 +1152,9 @@ function loadProducts(){
               </del>
             `;
 
-          }else{
+          }
+
+          else{
 
             priceHTML =
               money(price);
@@ -1199,7 +1263,10 @@ function loadProducts(){
 
       function(error){
 
-        console.error(error);
+        console.error(
+          "Firestore Error:",
+          error
+        );
 
 
         document
